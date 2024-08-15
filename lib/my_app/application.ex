@@ -7,9 +7,18 @@ defmodule MyApp.Application do
 
   @impl true
   def start(_type, _args) do
+    Registry.start_link(keys: :unique, name: :my_reg)
+    identifiers = ["user_one", "user_two", "user_three"]
+    values = %{
+      :a => ["a0", "a1", "a2"],
+      :b => ["b0", "b1", "b2"]
+    }
+
     children = [
-      # Starts a worker by calling: MyApp.Worker.start_link(arg)
-      # {MyApp.Worker, arg}
+      Supervisor.child_spec({MyProducer, {:a, identifiers, values}}, id: :worker_1),
+      Supervisor.child_spec({MyProducer, {:b, identifiers, values}}, id: :worker_2),
+      Supervisor.child_spec(MyConsumer, id: :consumer_1),
+      #Supervisor.child_spec({MyConsumer, :b}, id: :consumer_2)
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
