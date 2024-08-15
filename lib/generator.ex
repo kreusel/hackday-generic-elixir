@@ -42,13 +42,21 @@ defmodule MyConsumer do
     GenServer.call(pid, {:collector, topic, msg})
   end
 
+  def fun_replace(state, id, topic, new_value) do
+    Map.update(state, id, %{topic => new_value}, &Map.put(&1, topic, new_value))
+  end
+
+  def fun_append(state, id, topic, new_value) do
+    Map.update(state, id, %{topic => new_value}, fn x -> Map.put(x, topic, &"#{&1} #{new_value}") end)
+  end
+
   @impl true
   def handle_call({:collector, topic, {id, new_value}}, _from, state) do
-    new_state = Map.update(state, id, %{topic => new_value}, &Map.put(&1, topic, new_value))
+    new_state = fun_replace(state, id, topic, new_value)
 
     updated_id = new_state[id]
     case Enum.sort(Map.keys(updated_id)) do
-      [:a, :b] -> IO.inspect("User with id #{id} complete: #{Map.values(updated_id)}") #%{id => updated_id}
+      [:a, :b] -> IO.puts("User with id #{id} complete: #{Map.values(updated_id)}")
       _ -> :nothing
     end
 

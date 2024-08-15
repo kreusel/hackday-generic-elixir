@@ -15,9 +15,10 @@ defmodule MyApp.Application do
     }
 
     children = [
-      Supervisor.child_spec({MyProducer, {:a, identifiers, values}}, id: :worker_1),
-      Supervisor.child_spec({MyProducer, {:b, identifiers, values}}, id: :worker_2),
+      #Supervisor.child_spec({MyProducer, {:a, identifiers, values}}, id: :worker_1),
+      #Supervisor.child_spec({MyProducer, {:b, identifiers, values}}, id: :worker_2),
       Supervisor.child_spec(MyConsumer, id: :consumer_1),
+      Broadway_Kafka
       #Supervisor.child_spec({MyConsumer, :b}, id: :consumer_2)
     ]
 
